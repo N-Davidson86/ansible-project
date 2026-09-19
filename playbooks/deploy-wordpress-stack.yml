@@ -3,27 +3,14 @@
   hosts: targets
   become: true
 
+  roles:
+    - nginx
+
   tasks:
-    # 0. Убираем CD-ROM из источников (иначе apt update падает)
-    - name: Убрать cdrom из apt sources
-      replace:
-        path: /etc/apt/sources.list
-        regexp: '^deb cdrom:'
-        replace: '# deb cdrom:'
-      when: ansible_os_family == "Debian"
-
-    # 1. Обновляем списки пакетов (только для Debian/Ubuntu)
-    - name: Обновить списки пакетов (apt update)
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
-
-    # 2. Устанавливаем пакеты: Nginx, PHP-FPM, MariaDB и зависимости
-    - name: Установить Nginx, PHP-FPM и MariaDB
+    # 0. Устанавливаем пакеты: PHP-FPM, MariaDB и зависимости
+    - name: Установить PHP-FPM и MariaDB
       apt:
         name:
-          - nginx
           - php-fpm                # установит версию по умолчанию из репозитория
           - php-mysql
           - mariadb-server
@@ -31,7 +18,7 @@
         state: present
       when: ansible_os_family == "Debian"
 
-    # 3. Узнаём, какая версия PHP реально установилась (например, 8.1, 8.2)
+    # 1. Узнаём, какая версия PHP реально установилась (например, 8.1, 8.2)
     - name: Определить версию PHP-FPM
       shell: dpkg -l | grep php-fpm | awk '{print $2}' | sed 's/php-fpm//' | head -n1
       register: php_fpm_version_raw
@@ -51,12 +38,6 @@
       when: php_fpm_version_raw.stdout == ""
 
     # 4. Включаем и запускаем службы
-    - name: Включить и запустить Nginx
-      service:
-        name: nginx
-        enabled: yes
-        state: started
-
     - name: Включить и запустить MariaDB
       service:
         name: mariadb
