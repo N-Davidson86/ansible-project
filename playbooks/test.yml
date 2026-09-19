@@ -1,0 +1,25 @@
+---
+- name: Проверка инфраструктуры
+  hosts: all
+  become: true
+  tasks:
+    - name: Установка базовых пакетов
+      package:
+        name:
+          - vim
+          - curl
+          - htop
+          - git
+        state: present
+
+    - name: Информация о системе
+      debug:
+        msg: >
+          Хост: {{ ansible_hostname }},
+          ОС: {{ ansible_distribution }} {{ ansible_distribution_version }},
+          Ядро: {{ ansible_kernel }}
+
+    - name: Текущее время
+      debug:
+        msg: "{{ ansible_date_time.date }} {{ ansible_date_time.time }} ({{ ansible_date_time.tz }})"
+

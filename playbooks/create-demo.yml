@@ -1,0 +1,29 @@
+---
+- name: Создать папку и тестовый файл на целевой ВМ
+  hosts: targets
+  become: true
+  tasks:
+    - name: Создать директорию /opt/demo
+      file:
+        path: "{{ app_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Создать файл hello.txt
+      copy:
+        content: "Привет, Ansible! Это тестовый файл."
+        dest: "{{ app_path }}/hello.txt"
+        mode: '0644'
+
+    - name: Добавить текущую дату в файл marker.txt
+      lineinfile:
+        path: "{{ app_path }}/marker.txt"
+        line: "Updated at {{ ansible_date_time.iso8601 }}"
+        create: yes
+
+    - name: Записать текущую дату (МСК) в marker.txt
+      shell: >
+        date "+%d.%m.%Y %H:%M:%S" > /opt/demo/marker.txt
+
+
+

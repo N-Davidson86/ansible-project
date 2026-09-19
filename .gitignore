@@ -1,0 +1,7 @@
+*.retry
+*.log
+.DS_Store
+/root/.ssh/ansible_rsa
+/root/.ssh/ansible_rsa.pub
+*.key
+*.pem
