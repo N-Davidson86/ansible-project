@@ -1,0 +1,34 @@
+---
+- name: Установить PHP-FPM и зависимости
+  apt:
+    name:
+      - php-fpm
+      - php-mysql
+      - unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Определить версию PHP-FPM
+  shell: dpkg -l | grep php-fpm | awk '{print $2}' | sed 's/php-fpm//' | head -n1
+  register: php_fpm_version_raw
+  changed_when: false
+  check_mode: no
+  when: ansible_os_family == "Debian"
+
+- name: Записать версию PHP в переменную
+  set_fact:
+    php_fpm_service_name: "php{{ php_fpm_version_raw.stdout | trim }}-fpm"
+  when: php_fpm_version_raw.stdout | trim != ""
+
+- name: Задать запасное имя службы PHP-FPM (fallback)
+  set_fact:
+    php_fpm_service_name: "php8.1-fpm"
+  when: php_fpm_version_raw.stdout | trim == ""
+
+- name: Включить и запустить PHP-FPM
+  service:
+    name: "{{ php_fpm_service_name }}"
+    enabled: yes
+    state: started
+  when: ansible_os_family == "Debian"
+
