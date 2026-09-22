@@ -5,15 +5,15 @@
 
   roles:
     - nginx
+    - mariadb
 
   tasks:
-    # 0. Устанавливаем пакеты: PHP-FPM, MariaDB и зависимости
-    - name: Установить PHP-FPM и MariaDB
+    # 0. Устанавливаем пакеты: PHP-FPM и зависимости
+    - name: Установить PHP-FPM
       apt:
         name:
           - php-fpm                # установит версию по умолчанию из репозитория
           - php-mysql
-          - mariadb-server
           - unzip
         state: present
       when: ansible_os_family == "Debian"
@@ -37,12 +37,7 @@
         php_fpm_service_name: "php8.1-fpm"
       when: php_fpm_version_raw.stdout == ""
 
-    # 4. Включаем и запускаем службы
-    - name: Включить и запустить MariaDB
-      service:
-        name: mariadb
-        enabled: yes
-        state: started
+    # Запускаем PHP 
 
     - name: Включить и запустить PHP-FPM (версия определена динамически)
       service:

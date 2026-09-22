@@ -1,0 +1,15 @@
+---
+- name: Установить MariaDB и утилиты
+  apt:
+    name:
+      - mariadb-server
+      - unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Включить и запустить MariaDB
+  service:
+    name: mariadb
+    enabled: yes
+    state: started
+
