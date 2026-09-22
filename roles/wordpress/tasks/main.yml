@@ -1,0 +1,32 @@
+---
+- name: Скачать архив WordPress
+  get_url:
+    url: "https://wordpress.org/latest.tar.gz"
+    dest: "/tmp/latest.tar.gz"
+    mode: "0644"
+
+- name: Распаковать WordPress в /var/www/html
+  unarchive:
+    src: "/tmp/latest.tar.gz"
+    dest: "/var/www/html"
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    creates: "/var/www/html/wp-config.php"
+
+- name: Создать wp-config.php из шаблона
+  template:
+    src: "templates/wp-config.php.j2"
+    dest: "/var/www/html/wp-config.php"
+    owner: www-data
+    group: www-data
+    mode: "0644"
+  notify: Reload Nginx
+
+- name: Включить сайт WordPress в Nginx
+  file:
+    src: "/etc/nginx/sites-available/default"
+    dest: "/etc/nginx/sites-enabled/wordpress"
+    state: link
+  notify: Reload Nginx
+

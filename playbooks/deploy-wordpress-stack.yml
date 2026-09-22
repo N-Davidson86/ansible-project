@@ -7,3 +7,4 @@
     - nginx
     - mariadb
     - php_fpm
+    - wordpress

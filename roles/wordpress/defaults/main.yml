@@ -1,0 +1,5 @@
+---
+wp_db_name: "wordpress"
+wp_db_user: "wpuser"
+wp_db_password: "strong_password_here"
+
