@@ -10,9 +10,10 @@
     src: "/tmp/latest.tar.gz"
     dest: "/var/www/html"
     remote_src: yes
+    extra_opts: "--strip-components=1"
     owner: www-data
     group: www-data
-    creates: "/var/www/html/wp-config.php"
+    creates: "/var/www/html/wp-login.php"
 
 - name: Создать wp-config.php из шаблона
   template:
@@ -23,10 +24,16 @@
     mode: "0644"
   notify: Reload Nginx
 
+- name: Создать конфиг Nginx для WordPress
+  template:
+    src: "nginx-wordpress.conf.j2"
+    dest: "/etc/nginx/sites-available/default"
+    mode: "0644"
+  notify: Reload Nginx
+
 - name: Включить сайт WordPress в Nginx
   file:
     src: "/etc/nginx/sites-available/default"
     dest: "/etc/nginx/sites-enabled/wordpress"
     state: link
   notify: Reload Nginx
-
