@@ -1,5 +1,0 @@
-[test_servers]
-testmachine-ansible ansible_user=ansible
-
-[targets]
-testmachine-ansible ansible_user=ansible
