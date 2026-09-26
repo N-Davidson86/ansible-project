@@ -1,0 +1,48 @@
+---
+# Сначала создаём группу — пользователь не может принадлежать несуществующей группе
+- name: Create devops group
+  group:
+    name: "{{ new_user_group }}"
+    state: present
+
+# Создаём пользователя с жёстко заданным UID и нужной оболочкой
+- name: Create devops_user with UID 1010
+  user:
+    name: "{{ new_user_name }}"
+    uid: "{{ new_user_uid }}"
+    group: "{{ new_user_group }}"
+    shell: "{{ new_user_shell }}"
+    create_home: true
+    home: "{{ new_user_home }}"
+    state: present
+
+# Создаём нужные папки внутри домашней директории (projects и .config)
+- name: Ensure projects and .config directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ new_user_name }}"
+    group: "{{ new_user_group }}"
+    mode: "0755"
+  loop:
+    - "{{ new_user_home }}/projects"
+    - "{{ new_user_home }}/.config"
+
+# Копируем .bashrc — это конфиг оболочки, чтобы у пользователя были удобные алиасы
+- name: Copy .bashrc for devops_user
+  copy:
+    src: bashrc.example
+    dest: "{{ new_user_home }}/.bashrc"
+    owner: "{{ new_user_name }}"
+    group: "{{ new_user_group }}"
+    mode: "0644"
+
+# Копируем README.md — просто описание структуры папок для пользователя
+- name: Copy README.md to home directory
+  copy:
+    src: README.md
+    dest: "{{ new_user_home }}/README.md"
+    owner: "{{ new_user_name }}"
+    group: "{{ new_user_group }}"
+    mode: "0644"
+

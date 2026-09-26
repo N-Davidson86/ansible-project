@@ -1,0 +1,6 @@
+
+# .bashrc for devops_user
+alias ll='ls -la'
+alias grep='grep --color=auto'
+export PS1='[\u@\h \w]\$ '
+

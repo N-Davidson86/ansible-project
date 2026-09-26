@@ -1,0 +1,6 @@
+---
+new_user_name: "devops_user"
+new_user_uid: 1010
+new_user_group: "devops"
+new_user_home: "/home/{{ new_user_name }}"
+new_user_shell: "/bin/bash"
